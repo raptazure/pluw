@@ -1,5 +1,9 @@
+# PLUW
+
 ## Table of Contents
 
+- [PLUW](#pluw)
+  - [Table of Contents](#table-of-contents)
 - [Part A. Standard ML](#part-a-standard-ml)
     - [ML Variable Bindings and Expressions](#ml-variable-bindings-and-expressions)
     - [ML Functions](#ml-functions)
