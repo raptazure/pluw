@@ -1,6 +1,4 @@
-# Part A. Standard ML
-
-Table of Contents
+## Table of Contents
 
 - [Part A. Standard ML](#part-a-standard-ml)
     - [ML Variable Bindings and Expressions](#ml-variable-bindings-and-expressions)
@@ -38,6 +36,8 @@ Table of Contents
     - [Static Versus Dynamic Typing](#static-versus-dynamic-typing)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
+# Part A. Standard ML
 
 ### ML Variable Bindings and Expressions
 
