@@ -1,5 +1,46 @@
 # Part A. Standard ML
 
+Table of Contents
+=================
+
+   * [Part A. Standard ML](#part-a-standard-ml)
+   * [Table of Contents](#table-of-contents)
+         * [ML Variable Bindings and Expressions](#ml-variable-bindings-and-expressions)
+         * [ML Functions](#ml-functions)
+         * [Pairs and Other Tuples](#pairs-and-other-tuples)
+         * [Lists](#lists)
+         * [Let Expressions](#let-expressions)
+         * [Options](#options)
+         * [Booleans and Comparison Operations](#booleans-and-comparison-operations)
+         * [No Mutation: ML vs. Imperative Languages](#no-mutation-ml-vs-imperative-languages)
+         * [Pieces of a Language](#pieces-of-a-language)
+         * [Building Compound Types](#building-compound-types)
+         * [Records](#records)
+         * [Datatype Bindings](#datatype-bindings)
+         * [Case Expressions](#case-expressions)
+         * [Type Synonyms](#type-synonyms)
+         * [Each of Pattern Matching](#each-of-pattern-matching)
+         * [Polymorphic and Equality types](#polymorphic-and-equality-types)
+         * [Nested Patterns](#nested-patterns)
+         * [Exceptions](#exceptions)
+         * [Tail Recursion](#tail-recursion)
+         * [First-Class Functions](#first-class-functions)
+         * [Lexical Scope](#lexical-scope)
+         * [Closures and Recomputation](#closures-and-recomputation)
+         * [Mutable References](#mutable-references)
+         * [Type Inference](#type-inference)
+         * [Mutual Recursion](#mutual-recursion)
+         * [Modules](#modules)
+         * [Equivalence](#equivalence)
+   * [Part B. Racket](#part-b-racket)
+         * [ML Versus Racket](#ml-versus-racket)
+         * [Static Checking](#static-checking)
+         * [Soundness and Completeness](#soundness-and-completeness)
+         * [Weak typing](#weak-typing)
+         * [Static Versus Dynamic Typing](#static-versus-dynamic-typing)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
 ### ML Variable Bindings and Expressions
 
 ```sml
@@ -878,3 +919,71 @@ end
 - PL Eq: given same inputs, same outputs and effects.
 - Asymptotic Eq: ignore constant factors.
 - Systems Eq: Account for constant overheads, performance tune.
+
+# Part B. Racket
+
+### ML Versus Racket
+
+1. Key differences: syntax, pattern-matching vs. struct-tests and accessor-functions, semantics of various let-expressions, type system.
+2. Consider how a Racket programmer might view ML. Ignoring syntax differences and other issues, we can describe ML as roughly defining a subset of Racket: Programs that run produce similar answers, but ML rejects many more programs as illegal.
+```racket
+(define (f x) (if (> x 0) #t (list 1 2)))
+(define xs (list 1 #t "hi"))
+(define y (f (car xs)))
+```
+3. Racket is just ML where every expression is part of one big datatype. In this view,the result of every computation is implicitly wrapped by a constructor into the one big datatype and primitives like + have implementations that check the “tags” of their arguments e.g., to see if they are numbers) and raise errors as appropriate.
+```sml
+datatype theType = Int of int
+          | String of string
+          | Pair of theType * theType
+          | Fun of theType -> theType
+          | ... (* one constructor per built-in type *)
+```
+
+### Static Checking
+
+1. Static checking is anything done to reject a program after it (successfully) parses but before it runs.
+2. Part of a PL's definition: what static checking is performed. Common way to define a PL's static checking is via a type system.
+- Approach is to give each variable, expression, etc. a type
+- Purposes include preventing misuse of primitives, enforcing abstraction, and avoiding dynamic (at run-time) checking.
+3. Dynamically-typed languages do (almost) no static checking.
+4. Language design includes deciding what is checked and how. Hard part is making sure the type system "achieves its purpose".
+5. A question of eagerness: static checking / dynamic checking are two points on a continuum. Suppose we just want to prevent evaluating 3 / 0:
+- Keystroke time: disallow it in the editor
+- Compile time: disallow it if seen in code
+- Link time: disallow it if seen in code that may be called to evaluate main
+- Run time: disallow it right when we get to the division
+- Later: instead of doing the division, return `+inf.0`.
+
+### Soundness and Completeness
+
+1. Intuitively, a static checker is correct if it prevents what it claims to prevent — otherwise, either the language definition or the  implementation of static checking needs to be fixed. But we can give a more precise description of correctness by defining the terms soundness and completeness. For both, the definition is with respect to some thing X we wish to prevent.
+- A type system is sound if it never accepts a program that, when run with some input, does X. - No false negatives.
+- A type system is complete if it never rejects a program that, no matter what input it is run with, will not do X. - No false positives.
+2. The goal is usually for a PL type system to be sound (so you can rely on it) but not complete. "Fancy features" like generics aimed at "fewer false positives".
+3. Why incompleteness: almost anything you might like to check statically is undecidable.
+- Any static checker cannot do all of: always terminate, be sound, be complete.
+- This is a mathematical theorem.
+Undecidability is an essential concept at the core of computing. The inherent approximation of static checking is probably its most important ramification.
+4. Suppose a type system were unsound, what could the PL do? 
+- Fix it with an updated langugage definition?
+- Insert dynamic checks as needed to prevent X from happening?
+- Just allow X to happen even if "tried to stop it"?
+- Worse: allow not just X, but anything to happen if "programmer gets something wrong" (will discuss C/C++ in *weak typing*).
+
+### Weak typing
+
+1. There exist programs that, by definition, must pass static checking but then when run can set the computer on fire (C/C++).
+- Dynamic checking is optional and in practice not done
+- Why might anything happen?
+2. Why weak typing?
+- Ease of language impementation: checks left to the programmer
+- Performance: dynamic checks take time
+- Lower level: compiler does not insert information like array sizes, so it cannot do the checks.
+3. Weak typing is a poor name: really about doing neither static nor dynamic checks. It doesn't really have to do with type systems. It has to be with there being things that you are trying to prevent, some bad property X, and not checking for it. You are not checking for it statically nor dynamically and if it happens, the computer is allowed to catch fire. A big problem is array bounds, which most PLs check dynamically.
+4. Example: Racket is not weakly typed. It just checks most things dynamically. Dynamic checking is the definition - if the implementation can analyze the code to ensure some checks are not needed, then it can optimize them away. This is nothing like the "catch-fire semantics" of weak typing.
+5. What operations are primitives defined on and when an error: this is not static vs. dynamic checking. It is "what is the run-time semantics of the primitive" (evaluation rules). It is related because it also involves trade-offs between catching bugs sooner versus maybe being more convenient.
+
+### Static Versus Dynamic Typing
+
+1. Remember most languages do some of each. For example, perhaps type for primitives are checked statically, but array bounds are not.
