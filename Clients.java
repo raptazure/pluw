@@ -1,5 +1,3 @@
-package part01;
-
 public class Clients {
   static List<Integer> doubleAll(List<Integer> xs) {
     return List.map((new Func<Integer, Integer>() {

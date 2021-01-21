@@ -1,5 +1,3 @@
-package part01;
-
 interface Func<B, A> {
   B m(A x);
 }
