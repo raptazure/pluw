@@ -37,7 +37,6 @@
     - [Static Checking](#static-checking)
     - [Soundness and Completeness](#soundness-and-completeness)
     - [Weak Typing](#weak-typing)
-    - [Static Versus Dynamic Typing](#static-versus-dynamic-typing)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -985,7 +984,3 @@ Undecidability is an essential concept at the core of computing. The inherent ap
 3. Weak typing is a poor name: really about doing neither static nor dynamic checks. It doesn't really have to do with type systems. It has to be with there being things that you are trying to prevent, some bad property X, and not checking for it. You are not checking for it statically nor dynamically and if it happens, the computer is allowed to catch fire. A big problem is array bounds, which most PLs check dynamically.
 4. Example: Racket is not weakly typed. It just checks most things dynamically. Dynamic checking is the definition - if the implementation can analyze the code to ensure some checks are not needed, then it can optimize them away. This is nothing like the "catch-fire semantics" of weak typing.
 5. What operations are primitives defined on and when an error: this is not static vs. dynamic checking. It is "what is the run-time semantics of the primitive" (evaluation rules). It is related because it also involves trade-offs between catching bugs sooner versus maybe being more convenient.
-
-### Static Versus Dynamic Typing
-
-1. Remember most languages do some of each. For example, perhaps type for primitives are checked statically, but array bounds are not.
